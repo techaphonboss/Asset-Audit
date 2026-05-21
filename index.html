@@ -619,7 +619,92 @@ tbody tr:hover td{background:#F8FAFC}
       <div class="page-header"><div class="page-title">นำเข้าข้อมูลอุปกรณ์</div></div>
       <div class="card">
         <div class="card-body">
-          <div class="upload-zone" onclick="document.getElementById('xlf').click()">
+          <!-- Manual Add Single Device -->
+      <div class="card" style="margin-bottom:1rem;border:0.5px solid #E2E8F0">
+        <div class="card-header" style="cursor:pointer;user-select:none" onclick="toggleManualForm()">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:32px;height:32px;border-radius:8px;background:#EFF6FF;display:flex;align-items:center;justify-content:center">
+              <svg width="16" height="16" fill="none" stroke="#2563EB" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            </div>
+            <div>
+              <div class="card-title">เพิ่มอุปกรณ์ทีละรายการ</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:1px">กรอกข้อมูลด้วยตนเอง — บังคับใส่ SAP Code</div>
+            </div>
+          </div>
+          <div id="manual-form-arrow" style="color:var(--text3);transition:transform .2s">▼</div>
+        </div>
+        <div id="manual-form-body" style="display:none;padding:1.25rem;border-top:0.5px solid var(--border)">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:1rem">
+
+            <!-- SAP Code + Existing data search -->
+            <div class="fg" style="grid-column:1/-1">
+              <label style="display:flex;align-items:center;gap:6px">
+                SAP Code
+                <span style="background:#FEF2F2;color:#DC2626;font-size:10px;font-weight:700;padding:1px 6px;border-radius:100px">บังคับ</span>
+                <span id="man-sap-code-badge" style="font-size:11px;font-weight:700;color:#2563EB;font-family:monospace;background:#EFF6FF;padding:2px 8px;border-radius:4px;display:none"></span>
+              </label>
+              <input type="text" id="man-sap" placeholder="พิมพ์ชื่ออุปกรณ์หรือ ZASS- เพื่อค้นหา..." autocomplete="off"
+                oninput="sapAutocomplete(this.value)" onblur="setTimeout(()=>hideSapDropdown(),200)">
+              <div style="position:relative">
+                <div id="sap-dropdown" style="display:none;position:absolute;top:2px;left:0;right:0;z-index:200;background:#fff;border:1px solid #CBD5E0;border-radius:var(--radius-lg);box-shadow:0 8px 24px rgba(0,0,0,0.15);max-height:360px;overflow-y:auto"></div>
+              </div>
+            </div>
+
+            <div class="fg" style="grid-column:1/-1">
+              <label>ชื่ออุปกรณ์ / SAP Desc</label>
+              <input type="text" id="man-name" placeholder="ชื่ออุปกรณ์ (กรอกเองหรือเลือกจากรายการ)">
+            </div>
+
+            <div class="fg" style="grid-column:1/-1">
+              <label style="display:flex;align-items:center;gap:8px">
+                Description / ตำแหน่ง
+                <span style="font-size:11px;color:var(--text3);font-weight:400">— เช่น Module 1, Rectifier ตัวที่ 2, ชั้น 3</span>
+              </label>
+              <input type="text" id="man-desc" placeholder="ระบุตำแหน่งหรือรายละเอียดเพิ่มเติม (เช่น Module 2 of 5)">
+            </div>
+
+            <div class="fg">
+              <label style="display:flex;align-items:center;gap:6px">
+                Serial Number
+                <span style="background:#FEF2F2;color:#DC2626;font-size:10px;font-weight:700;padding:1px 6px;border-radius:100px">บังคับ</span>
+              </label>
+              <input type="text" id="man-sn" placeholder="SN">
+            </div>
+            <div class="fg"><label>Asset Number</label><input type="text" id="man-asset" placeholder="Asset No."></div>
+            <div class="fg">
+              <label style="display:flex;align-items:center;gap:6px">
+                Node / คลัง
+                <span style="background:#FEF2F2;color:#DC2626;font-size:10px;font-weight:700;padding:1px 6px;border-radius:100px">บังคับ</span>
+              </label>
+              <select id="man-node">
+                <option value="">-- เลือก Node --</option>
+                <option value="BKK2">BKK2 (คลังส่วนกลาง)</option>
+                <option value="BK2L">BK2L (อุปกรณ์เสีย)</option>
+                <option value="BK2R">BK2R (รอซ่อม)</option>
+              </select>
+            </div>
+            <div class="fg"><label>Brand</label><input type="text" id="man-brand" placeholder="Brand"></div>
+            <div class="fg"><label>Model</label><input type="text" id="man-model" placeholder="Model"></div>
+            <div class="fg">
+              <label>ประเภท</label>
+              <select id="man-type"><option>Network</option><option>CON</option><option>Power</option><option>Other</option></select>
+            </div>
+          </div>
+
+          <!-- Validation message -->
+          <div id="man-err" style="display:none;background:#FEF2F2;border:0.5px solid #FECACA;border-radius:var(--radius);padding:.75rem 1rem;font-size:13px;color:#DC2626;margin-bottom:1rem"></div>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary" onclick="manualAddDevice()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              เพิ่มอุปกรณ์
+            </button>
+            <button class="btn btn-outline" onclick="clearManualForm()">ล้างฟอร์ม</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="upload-zone" onclick="document.getElementById('xlf').click()">
             <div class="upload-icon">📂</div>
             <p>คลิกหรือลากไฟล์ Excel มาวางที่นี่</p>
             <small>รองรับ .xlsx · ทุก Sheet อัตโนมัติ · รูปแบบ ITEL และมาตรฐาน</small>
@@ -1000,11 +1085,257 @@ tbody tr:hover td{background:#F8FAFC}
 <script>
 // ========== DATA ==========
 const ACCOUNTS={infra:{pass:'infra1234',role:'admin',label:'Administrator'},user:{pass:'user1234',role:'user',label:'ผู้ใช้งาน'}};
-// ระบบรูปอุปกรณ์ - 1 ชื่อ = 1 รูป (keyed by ชื่ออุปกรณ์ lowercase)
-const deviceImages={};  // {'rectifier 48v dc 5u 12kw': 'data:image/png;base64,...'}
+// ===== SAP Code Database (156 รายการ) =====
+const SAP_DB={
+  'Container 2.40x4.00x2.80 m.(H\'cu)': 'ZASS-210002',
+  'Container 2.40x4.00x2.50 m.(Hcu)': 'ZASS-210003',
+  'Container 2.40x6.00x2.50 m.(Hcu)': 'ZASS-210004',
+  'Container 3.00x6.00x2.80 m.(Hcu)': 'ZASS-210005',
+  'AC Power Cord 3Cx18AWG 10M.': 'ZASS-020520',
+  'AC Power Cord 3Cx18AWG 5M.': 'ZASS-020519',
+  'Aluminum Outdoor127x90x65cm on Pole Node': 'ZASS-030007',
+  'Analog Time Switch TB36809NE5': 'ZASS-230034',
+  'Analog Time Switch ยี่ห้อ Panasonic': 'ZASS-020388',
+  'ASR 9006 AC CHASSIS WITH PEM VERSION 2': 'ZASS-200052',
+  'ASR 9006 DC CHASSIS WITH PEM VERSION 2': 'ZASS-200053',
+  'ASR900 DC Power Supply 1200W': 'ZASS-230048',
+  'ASR920 AC Power Supply(ASR-920-PWR-A)': 'ZASS-200007',
+  'ASR920 Cable Guide (A920-CBL-GUIDE)': 'ZASS-200020',
+  'ASR920 DC Power Supply(ASR-920-PWR-D)': 'ZASS-200006',
+  'ASR920CableBracketfor non TSI rackmounts': 'ZASS-050074',
+  'ASR920Fan for Modular Chassis(ASR-920-FA': 'ZASS-200008',
+  'ATTENUATOR FC/UPC 10dB': 'ZASS-020202',
+  'ATTENUATOR FC/UPC 3dB': 'ZASS-020201',
+  'ATTENUATOR FC/UPC 5dB': 'ZASS-020200',
+  'ATTENUATOR LC/UPC 10dB': 'ZASS-020212',
+  'ATTENUATOR LC/UPC 5dB': 'ZASS-020220',
+  'AUTOMATIC VOLTAGE STABILIZER': 'ZASS-230028',
+  'Battery 12V,150Ah VISION': 'ZASS-230010',
+  'Battery 12V,150Ah VISION-Free': 'ZASS-030138',
+  'Battery 12V,24Ah VISION': 'ZASS-230013',
+  'Battery 12V,28Ah BB': 'ZASS-230011',
+  'Battery 12V,33Ah VISION HFS12-150W-X': 'ZASS-230074',
+  'Battery 12V,55Ah FIAMM': 'ZASS-230014',
+  'Battery 12VDC,150Ah Energetic': 'ZASS-230065',
+  'Battery 12VDC,150Ah SHIMASTU': 'ZASS-230009',
+  'Battery 12VDC,26Ah Energetic': 'ZASS-230066',
+  'Battery 12VDC,26Ah SHIMASTU': 'ZASS-230012',
+  'Battery ACCU 12V 26Ah': 'ZASS-230043',
+  'Battery Lithium 48VDC,100Ah FBH': 'ZASS-230073',
+  'BATTERY LITHIUM 48VDC,150AH FBH': 'ZASS-230087',
+  'Battery Quality Analyzer CCA รุ่น BA101': 'ZASS-230053',
+  'Battery Quality Analyzer WENS900': 'ZASS-230008',
+  'Battery VISION VRLA 12V,125Ah': 'ZASS-230049',
+  'DIGITAL TIMER 220V 16A รุ่น SBX130': 'ZASS-020686',
+  'DIGITAL TIMER 220V 16A รุ่น THC15A': 'ZASS-020657',
+  'DWDM Equipment': 'ZASS-960002',
+  'ETR+2048 module rectifier 2kW ENETEK': 'ZASS-230077',
+  'ETR+3048 module rectifier 3kW ENETEK': 'ZASS-230041',
+  'Hikvision 1MP Network PT Camera': 'ZASS-200038',
+  '2 MP Indoor Fixed PT Network Camera': 'ZASS-200102',
+  'IP Camera Ezviz รุ่น C6N 2MP': 'ZASS-230104',
+  'INTRONICS 2-AIR CONTROLLER,CDMA,V.2': 'ZASS-230007',
+  'IP Camera NCL612WP': 'ZASS-230024',
+  'LC Attenuator PC grade 10 dB': 'ZASS-020239',
+  'LC Attenuator PC grade 5 dB': 'ZASS-020238',
+  'Magnetic switch (door alarm)': 'ZASS-010117',
+  'Manual Transfer Switch Control Indoor': 'ZASS-230005',
+  'Manual Transfer Switch Control Outdoor': 'ZASS-230006',
+  'ME3600X AC Power Supply': 'ZASS-200040',
+  'ME3600X DC Power Supply': 'ZASS-200041',
+  'MEANWELL Inverter 1000W48VDC,220VAC(A)': 'ZASS-230003',
+  'MEANWELL Inverter 1000W48VDC,220VAC(B)': 'ZASS-230004',
+  'MEANWELL Inverter 3000W48VDC,220VAC(A)': 'ZASS-180011',
+  'MEANWELL Inverter 3000W48VDC,220VAC(B)': 'ZASS-230002',
+  'Network Inverter 4800W48VDC 6KVA': 'ZASS-200098',
+  'Inverter 48VDC/230VAC 2KVA 1600W NSD': 'ZASS-200101',
+  'Memory Card Micro SD 32GB Class 10': 'ZASS-030326',
+  'Memory Card Micro SD 64GB Class 10': 'ZASS-020279',
+  'Module Rectifier 2000W for 5U ELTEK': 'ZASS-230018',
+  'Module Rectifier 48V,3000W': 'ZASS-230050',
+  'Module Rectifier 800W for 1U ELTEK': 'ZASS-230020',
+  'Module Rectifier 800W POWER ONE': 'ZASS-230022',
+  'Power Inverter DC48v-AC220V 1200W NTU-EU': 'ZASS-180034',
+  'Power Inverter DC48v-AC220V 1200W NTU-UN': 'ZASS-180035',
+  'Rectifier 2U 4000W, ยี่ห้อ Eltek': 'ZASS-200071',
+  'Rectifier 48V dc 1U 4kW ENETEK': 'ZASS-230064',
+  'Rectifier 48VDC,6U,24000W ENETEK': 'ZASS-230091',
+  'Rectifier 48V dc 2U 9kW ENETEK': 'ZASS-230040',
+  'Rectifier 48V dc 5U 12kW ENETEK': 'ZASS-230039',
+  'Rectifier 48VDC,1U Subrack Enetek': 'ZASS-030336',
+  'Rectifier 48VDC,1U,1600W ELTEK': 'ZASS-230016',
+  'Rectifier 48VDC,1U,1600W POWER ONE': 'ZASS-230015',
+  'Rectifier 48VDC,5U,6000W ELTEK': 'ZASS-230017',
+  'Rectifier 48VDC,6U,10000W ELTEK': 'ZASS-230068',
+  'Rectifier 5U 4000W, ยี่ห้อ Eltek': 'ZASS-230038',
+  'Rectifier Controller 1U POWER ONE': 'ZASS-230023',
+  'Rectifier Controller for 1U ELTEK': 'ZASS-230021',
+  'Smart Power Transfer Switch 16A': 'ZASS-230025',
+  'Smart Power Transfer Switch 16A SNMP': 'ZASS-230026',
+  'Smart Power Transfer Switch 30A': 'ZASS-230067',
+  'Smartpack controller for 5U ELTEK': 'ZASS-230019',
+  'SMU01 controller module rectifier ENETEK': 'ZASS-230042',
+  'Switch Cisco ASR920 Series': 'ZASS-060006',
+  'Switch Cisco ME3400 24FX SFP+2 SFP AC': 'ZASS-060005',
+  'Switch Cisco ME3600 24 GE SFP+2 10GE': 'ZASS-060004',
+  'Switch FiberHome S5800-28F-X-AC': 'ZASS-060053',
+  'Temperature Controller': 'ZASS-200070',
+  'เครื่องปรับอากาศ 18,000 BTU': 'ZASS-230001',
+  'เครื่องปรับอากาศ 18,500 BTU EMINENT(IN)': 'ZASS-230078',
+  'เครื่องปรับอากาศ 18,500 BTU EMINENT(OUT)': 'ZASS-230079',
+  'เครื่องปรับอากาศ 18,800 BTU EMINENT(IN)': 'ZASS-230075',
+  'เครื่องปรับอากาศ 18,800 BTU EMINENT(OUT)': 'ZASS-230076',
+  'เครื่องปรับอากาศ 24,500 BTU EMINENT(IN)': 'ZASS-230080',
+  'เครื่องปรับอากาศ 24,500 BTU EMINENT(OUT)': 'ZASS-230081',
+  'เครื่องปรับอากาศ 25,000 BTU': 'ZASS-230069',
+  'เครื่องปรับอากาศ FHNQ13NV2S+RNQ13NV2S': 'ZASS-020315',
+  'เครื่องปรับอากาศ FHNQ24NV2S+RNQ24NV2S': 'ZASS-020316',
+  'เครื่องปรับอากาศ FHNQ30NV2S+RNQ30NV2S': 'ZASS-020317',
+  'ชั้นวางแบตเตอรี่ NODE': 'ZASS-230055',
+  'เบรกเกอร์ MCB 1P S201M-C ABB': 'ZASS-020685',
+  'เบรกเกอร์ NDB1 32A 6ka 1P NADER': 'ZASS-020684',
+  'เบรกเกอร์ NDB1-63 MCB 32A/1P NADER': 'ZASS-020698',
+  'เบรกเกอร์ S201-C10 1P 10A 10KA ABB': 'ZASS-020295',
+  'เบรกเกอร์ S201-C16 1P 16A 10KA ABB': 'ZASS-020294',
+  'เบรกเกอร์ S202M-C50 2P 50A 10KA': 'ZASS-020265',
+  'เบรกเกอร์ SH201-C10 1P 10A 6KA': 'ZASS-020268',
+  'เบรกเกอร์ SH201-C10 1P 16A 6KA': 'ZASS-020305',
+  'เบรกเกอร์ SH201-C10 1P 32A 6KA': 'ZASS-020306',
+  'เบรกเกอร์ SH201-C16 1P 16A 6KA': 'ZASS-020267',
+  'เบรกเกอร์ SH201-C32 1P 32A 6KA': 'ZASS-020266',
+  'ปลอกหางปลา 16 Sq. mm. สีเขียว v14': 'ZASS-020123',
+  'ปลอกหางปลา 25 Sq. mm. สีแดง v22': 'ZASS-020124',
+  'ปลอกหางปลา 25 Sq. mm. สีน้ำเงิน v22': 'ZASS-020125',
+  'ปลอกหางปลาทองแดง 16 Sqmm. น้ำเงิน V14': 'ZASS-010083',
+  'ปลอกหางปลาทองแดง 16 Sqmm. สีเขียว V14': 'ZASS-010085',
+  'ปลอกหางปลาทองแดง 16 Sqmm. สีแดง V14': 'ZASS-010084',
+  'พัดลมระบายอากาศ': 'ZASS-020222',
+  'พัดลมระบายอากาศ AC 4.5 นิ้ว SUNON': 'ZASS-020670',
+  'พัดลมระบายอากาศ DC 4.5 นิ้ว DELTA': 'ZASS-020671',
+  'มอเตอร์พัดลมคอยล์เย็น Part TCTT-43T21371': 'ZASS-020459',
+  'มอเตอร์พัดลมคอยล์ร้อน Part TCTC-43T21377': 'ZASS-020418',
+  'เมนเบรกเกอร์ 2P 50A 10KA รุ่น S202M-C50': 'ZASS-020307',
+  'แมกเนติก 30A 2P': 'ZASS-020360',
+  'สาย IEC 01 THW 1x16 sq.mm สีดำ': 'ZASS-010279',
+  'สาย IEC 02 THW(F) 1x16 sq.mm สีเขียว': 'ZASS-010093',
+  'สาย IEC 02 THW(F) 1x16 sq.mm สีดำ': 'ZASS-010092',
+  'สาย IEC 02 THW(F) 1x25 sq.mm สีเขียว': 'ZASS-020121',
+  'สาย IEC 02 THW(F) 1x25 sq.mm สีดำ': 'ZASS-010098',
+  'สาย IEC 02 THW(F) 1x6 sq.mm สีเขียว': 'ZASS-010094',
+  'สาย IEC 53 2x2.5 sq.mm': 'ZASS-010276',
+  'สาย VCT 2Cx2.5 Sq.mm. สีดำ': 'ZASS-010095',
+  'สาย VCT 3Cx4 Sq.mm. สีดำ': 'ZASS-010091',
+  'สาย VCT-G 2Cx4/4 mm. "YA"': 'ZASS-010267',
+  'สาย VCT-G 2x6/6 sq.mm.': 'ZASS-010277',
+  'สาย VFF 2x2.5 sq.mm.': 'ZASS-020658',
+  'หัวเสียบก้านไม้ขีด 5.5 ปลอกสีเหลือง': 'ZASS-020406',
+  'หัวเสียบก้านไม้ขีด แบบเปลือย #16': 'ZASS-020407',
+  'หางปลาก้านไม้ขีด PIN2.5AF': 'ZASS-010278',
+  'หางปลาแฉกหุ้ม 2.5 Sqmm. รู M3': 'ZASS-010090',
+  'หางปลาทองแดง 16 Sq. mm.1 รู M8': 'ZASS-020119',
+  'หางปลาทองแดง 25 Sq. mm. 1 รู้ M8': 'ZASS-020120',
+  'หางปลาทองแดง 35 Sq. mm. 2 รู ระยะ 2.5cm.': 'ZASS-020122',
+  'หางปลายุโรป 16 Sqmm. รู M8': 'ZASS-010088',
+  'หางปลายุโรป 25 Sqmm. รู M6': 'ZASS-010087',
+  'หางปลายุโรป 25 Sqmm. รู M8': 'ZASS-010086',
+  'หางปลายุโรป 6 Sqmm. รู M8': 'ZASS-010089',
+  'Router 100G FiberHome R820-7C': 'ZASS-050173',
+  'Power Module DC 100G FiberHome R820-7C': 'ZASS-200087',
+  'Power Module AC 100G FiberHome R820-7C': 'ZASS-200088',
+  'Mikrotik RB2011UiAS-2HnD-IN': 'ZASS-200001'
+};
+
+// หา SAP Code จากชื่ออุปกรณ์ (fuzzy match)
+function lookupSAP(name){
+  if(!name) return '';
+  const n=name.toLowerCase().trim();
+  // Exact match first
+  for(const [k,v] of Object.entries(SAP_DB)){
+    if(k.toLowerCase()===n) return v;
+  }
+  // Starts with match
+  for(const [k,v] of Object.entries(SAP_DB)){
+    if(n.startsWith(k.toLowerCase().substring(0,20)) || k.toLowerCase().startsWith(n.substring(0,20))) return v;
+  }
+  // Contains match
+  for(const [k,v] of Object.entries(SAP_DB)){
+    if(k.toLowerCase().includes(n.substring(0,15)) || n.includes(k.toLowerCase().substring(0,15))) return v;
+  }
+  return '';
+}
+
+// SAP autocomplete list
+function getSAPSuggestions(q){
+  if(!q||q.length<2) return [];
+  const ql=q.toLowerCase();
+  const results=[];
+  for(const [name,code] of Object.entries(SAP_DB)){
+    if(name.toLowerCase().includes(ql)||code.toLowerCase().includes(ql)){
+      results.push({name,code});
+      if(results.length>=8) break;
+    }
+  }
+  return results;
+}
+
+const STORAGE_KEY='infra_asset_devices';
+const IMG_STORAGE_KEY='infra_asset_images';
+const NODE_STORAGE_KEY='infra_asset_nodes';
+
+// ===== ระบบรูปอุปกรณ์ =====
+const deviceImages={};
 function getDevImg(name){ return name?deviceImages[name.toLowerCase().trim()]||null:null; }
-function setDevImg(name, dataUrl){ if(name) deviceImages[name.toLowerCase().trim()]=dataUrl; }
-function delDevImg(name){ if(name) delete deviceImages[name.toLowerCase().trim()]; }
+function setDevImg(name, dataUrl){ if(name){ deviceImages[name.toLowerCase().trim()]=dataUrl; saveImages(); } }
+function delDevImg(name){ if(name){ delete deviceImages[name.toLowerCase().trim()]; saveImages(); } }
+
+// ===== LocalStorage: บันทึก/โหลดข้อมูล =====
+function saveDevices(){
+  try{
+    // แยกเก็บ image ออกจาก devices (เพราะ image ใหญ่มาก)
+    const devicesNoImg=devices.map(function(d){
+      const c=Object.assign({},d); delete c.image; return c;
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(devicesNoImg));
+  }catch(e){ console.warn('saveDevices error:',e); }
+}
+function loadDevices(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(raw){ devices=JSON.parse(raw); return true; }
+  }catch(e){ console.warn('loadDevices error:',e); }
+  return false;
+}
+function saveImages(){
+  try{ localStorage.setItem(IMG_STORAGE_KEY, JSON.stringify(deviceImages)); }
+  catch(e){ console.warn('saveImages error (อาจเต็ม):',e); }
+}
+function loadImages(){
+  try{
+    const raw=localStorage.getItem(IMG_STORAGE_KEY);
+    if(raw){ Object.assign(deviceImages, JSON.parse(raw)); return true; }
+  }catch(e){ console.warn('loadImages error:',e); }
+  return false;
+}
+function saveNodes(){
+  try{ localStorage.setItem(NODE_STORAGE_KEY, JSON.stringify(nodes)); }
+  catch(e){ console.warn('saveNodes error:',e); }
+}
+function loadNodes(){
+  try{
+    const raw=localStorage.getItem(NODE_STORAGE_KEY);
+    if(raw){ nodes=JSON.parse(raw); return true; }
+  }catch(e){ console.warn('loadNodes error:',e); }
+  return false;
+}
+function clearAllStorage(){
+  if(!confirm('ล้างข้อมูลทั้งหมดในระบบ (อุปกรณ์ + รูป + Node ที่เพิ่มเอง)?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(IMG_STORAGE_KEY);
+  devices=[];
+  Object.keys(deviceImages).forEach(k=>delete deviceImages[k]);
+  renderImport(); updateLoginStats();
+  toast('ล้างข้อมูลทั้งหมดแล้ว');
+}
 const SPECIAL_NODES=['BKK2','BK2L','BK2R'];
 const REGION_BADGE={1:'badge-r1',2:'badge-r2',3:'badge-r3',4:'badge-r4',5:'badge-r5',6:'badge-r6'};
 const TYPE_ICON={Container:'📦',Pole:'🗼','Shop House':'🏠','Shop house':'🏠',Building:'🏢',Room:'🚪',Special:'⭐'};
@@ -1079,7 +1410,21 @@ function updateLoginStats(){
   if(dc) dc.textContent=devices.length.toLocaleString();
 }
 document.addEventListener('DOMContentLoaded', ()=>{
+  // โหลดข้อมูลจาก localStorage
+  loadImages();
+  const hadDevices=loadDevices();
+  // โหลด nodes ที่แก้ไขเอง (ถ้ามี) - overlay บน NODE_DB
+  loadNodes();
+
   updateLoginStats();
+
+  // แสดง storage info บน login
+  const devCount=devices.length;
+  if(devCount>0){
+    const dc=document.getElementById('login-device-count');
+    if(dc) dc.textContent=devCount.toLocaleString();
+  }
+
   // Auto-login if remember me was set (within 7 days)
   try{
     const saved=localStorage.getItem('infra_remember');
@@ -1344,6 +1689,7 @@ function saveNode(){
   } else {
     nodes[editNodeIdx]=data;toast('แก้ไข Node สำเร็จ');
   }
+  saveNodes();
   closeModal('nodeModal');
   populateProvinceFilter();
   renderNodeTable();
@@ -1358,6 +1704,7 @@ function confirmDelete(){
   if(deleteNodeIdx===null)return;
   nodes.splice(deleteNodeIdx,1);
   deleteNodeIdx=null;
+  saveNodes();
   closeModal('delModal');
   populateProvinceFilter();
   renderNodeTable();
@@ -1472,6 +1819,21 @@ function matchNode(rawText){
   }
 
   return null; // ไม่เจอ Node ใดเลย
+}
+
+// ตรวจว่าค่านี้เป็น Node จริง หรือเป็นเลขใบเบิก/reference number
+function isValidNodeValue(val){
+  if(!val) return false;
+  const v=val.trim().toUpperCase();
+  // Warehouse nodes always valid
+  if(['BKK2','BK2L','BK2R'].includes(v)) return true;
+  // Pattern ใบเบิก/ใบสั่ง: STRF-, PO-, GR-, เลขยาว, เลขที่มี / ฯลฯ
+  if(/^STRF-/i.test(v)) return false;
+  if(/^[A-Z]{2,4}-\d{6,}-\d{3,}$/i.test(v)) return false; // e.g. STRF-202605-00806
+  if(/^\d{8,}$/.test(v)) return false; // pure long number
+  // ถ้า matchNode ได้ = valid
+  if(matchNode(val)) return true;
+  return false;
 }
 
 // ========== AUDIT ==========
@@ -1761,23 +2123,27 @@ function loadExcel(input){
         // --- Auto-detect format ---
         // Find header row (row with 'To Node' or column headers)
         let headerRow=-1;
-        let colMap={node:-1,name:-1,sn:-1,asset:-1,brand:-1,model:-1,type:-1,qty:-1,remark:-1};
+        let colMap={node:-1,name:-1,sn:-1,asset:-1,brand:-1,model:-1,type:-1,qty:-1,remark:-1,sap:-1};
         let isITELFormat=false; // ITEL format: SN/Asset values shifted one col right
 
-        for(let i=0;i<Math.min(5,raw.length);i++){
-          const row=raw[i].map(v=>String(v||'').toLowerCase().trim());
-          if(row.includes('to node')||row.includes('node')||row.includes('อุปกรณ์')){
+        for(let i=0;i<Math.min(8,raw.length);i++){
+          const row=raw[i].map(v=>String(v||'').toLowerCase().replace(/[\n\r]+/g,' ').trim());
+          if(row.includes('to node')||row.includes('node')||row.includes('อุปกรณ์')
+            ||row.includes('ชื่อสินค้า')||row.includes('serial no.')||row.includes('คลัง')
+            ||row.includes('serial number')||row.includes('description')){
             headerRow=i;
+            // ใช้ FIRST occurrence เท่านั้น (กรณีมี column ชื่อซ้ำ เช่น "คลัง" 2 ครั้ง)
             row.forEach((h,idx)=>{
-              if(h==='to node'||h==='node name'||h==='node') colMap.node=idx;
-              if(h==='อุปกรณ์'||h==='description'||h==='ชื่ออุปกรณ์'||h==='sap desc') colMap.name=idx;
-              if(h==='s/n'||h==='sn'||h==='serial'||h==='serial number') colMap.sn=idx;
-              if(h==='asset number'||h==='asset'||h==='รหัสทรัพย์สิน') colMap.asset=idx;
-              if(h==='brand') colMap.brand=idx;
-              if(h==='model') colMap.model=idx;
-              if(h==='ประเภท'||h==='type') colMap.type=idx;
-              if(h==='จำนวน'||h==='qty'||h==='quantity') colMap.qty=idx;
-              if(h==='remark') colMap.remark=idx;
+              if(colMap.node<0 && (h==='to node'||h==='node name'||h==='node'||h==='คลัง')) colMap.node=idx;
+              if(colMap.name<0 && (h==='อุปกรณ์'||h==='description'||h==='ชื่ออุปกรณ์'||h==='sap desc'||h==='ชื่อสินค้า')) colMap.name=idx;
+              if(colMap.sn<0 && (h==='s/n'||h==='sn'||h==='serial'||h==='serial number'||h==='serial no.'||h==='serial no')) colMap.sn=idx;
+              if(colMap.asset<0 && (h==='asset number'||h==='asset'||h==='รหัสทรัพย์สิน'||h==='asset no.'||h==='asset no')) colMap.asset=idx;
+              if(colMap.brand<0 && h==='brand') colMap.brand=idx;
+              if(colMap.model<0 && (h==='model'||h==='รหัส crm')) colMap.model=idx;
+              if(colMap.type<0 && (h==='ประเภท'||h==='type')) colMap.type=idx;
+              if(colMap.qty<0 && (h==='จำนวน'||h==='qty'||h==='quantity')) colMap.qty=idx;
+              if(colMap.remark<0 && h==='remark') colMap.remark=idx;
+              if(colMap.sap<0 && (h==='รหัส sap'||h==='sap code'||h==='sap_code'||h.includes('sap'))) colMap.sap=idx;
             });
             // Check ITEL format: if "S/N" header found but next col has actual value
             // (ITEL uses merged cells with "SN :" label + value in next col)
@@ -1795,30 +2161,59 @@ function loadExcel(input){
         if(headerRow<0) return; // skip sheet if no header found
 
         let lastNode='';
-        let lastMatchedNode=null; // node object ที่ match แล้ว
+        let lastMatchedNode=null;
+        // ตรวจ format คลัง (col คลัง มีค่า BKK2/BK2L ทุกแถว)
+        let isWarehouseFormat=false;
+        const WAREHOUSE=['BKK2','BK2L','BK2R'];
+        if(colMap.node>=0){
+          for(let tr=headerRow+1;tr<Math.min(headerRow+8,raw.length);tr++){
+            const v=String(raw[tr][colMap.node]||'').trim();
+            if(WAREHOUSE.includes(v)) {isWarehouseFormat=true; break;}
+          }
+        }
+
         for(let i=headerRow+1;i<raw.length;i++){
           const row=raw[i];
-          if(!row||row.every(v=>!v)) continue; // skip empty rows
+          if(!row||row.every(v=>!v)) continue;
 
-          // Node: carry forward from last non-empty
           let node='';
           if(colMap.node>=0){
             const nv=String(row[colMap.node]||'').trim();
-            const cleaned=nv.replace(/^New\s+/i,'').trim();
-            if(cleaned){
-              lastNode=cleaned;
-              // Smart match: หา node object จาก DB
-              lastMatchedNode=matchNode(cleaned);
-              // ถ้าเจอ ใช้ node_name มาตรฐาน
-              if(lastMatchedNode) lastNode=lastMatchedNode.node_name;
+            if(isWarehouseFormat){
+              // คลัง format: ทุกแถวมี BKK2/BK2L/BK2R โดยตรง
+              if(nv) node=nv;
+              else node=lastNode;
+            } else {
+              const cleaned=nv.replace(/^New\s+/i,'').trim();
+              if(cleaned){
+                lastNode=cleaned;
+                lastMatchedNode=matchNode(cleaned);
+                if(lastMatchedNode) lastNode=lastMatchedNode.node_name;
+              }
+              node=lastNode;
             }
           }
-          node=lastNode;
+          if(node) lastNode=node;
+
+          // ===== ตรวจสอบ Node =====
+          // ถ้า Node เป็น pattern เลขใบเบิก (STRF-/PO-/etc.) ให้ถาม AI
+          // หรือถ้าเป็น special warehouse ให้ใช้ตรงๆ
+          // ตรวจว่า node เป็น valid node หรือเลขใบเบิก
+          if(node && !isValidNodeValue(node)){
+            // เป็นเลขใบเบิก/reference — ไม่ใช้ค่านี้เป็น Node
+            // ลอง matchNode จาก raw text อีกรอบ (อาจมีชื่อซ่อนอยู่)
+            const rematched=matchNode(node);
+            node = rematched ? rematched.node_name : lastNode; // ใช้ node ก่อนหน้า
+          }
 
           // Name
           let name='';
           if(colMap.name>=0) name=String(row[colMap.name]||'').trim();
           if(!name) continue; // skip rows with no device name
+
+          // ===== กรอง footer/invalid rows (เฉพาะ name ก่อน) =====
+          const footerKeywords=['ลงชื่อ','วันที่....','ผู้ตรวจ','เจ้าหน้าที่','ผู้จัดการ','ผู้ตรวจสอบ'];
+          if(footerKeywords.some(function(kw){return name.includes(kw);})) continue;
 
           // SN and Asset — handle ITEL format where "SN :" is label and value is next col
           let sn='',asset='';
@@ -1831,10 +2226,12 @@ function loadExcel(input){
             asset=colMap.asset>=0?String(row[colMap.asset]||'').trim():'';
           }
 
-          // Clean up placeholder values
+          // Clean up placeholder values + footer SN filter
           const bad=['-','n/a','na','none','ขาด','ไม่มี','รอโอน','sn :','asset :'];
           if(bad.includes(sn.toLowerCase())) sn='';
           if(bad.includes(asset.toLowerCase())) asset='';
+          // ข้ามถ้า SN มีลักษณะ footer (....หรือ ---)
+          if(sn && (sn.includes('....') || sn.includes('---') || sn.replace(/\./g,'').trim()==='')) continue;
 
           const brand=colMap.brand>=0?String(row[colMap.brand]||'').trim():'';
           const model=colMap.model>=0?String(row[colMap.model]||'').trim():'';
@@ -1845,8 +2242,11 @@ function loadExcel(input){
           if(!node && !sn && !asset) continue; // skip truly empty rows
           if(!sn) continue; // ข้ามรายการที่ไม่มี S/N
 
+          // SAP Code: จาก column โดยตรง หรือ lookup จากชื่อ
+          const sapFromCol=colMap.sap>=0?String(row[colMap.sap]||'').trim():'';
+          const sapCode=sapFromCol&&sapFromCol!=='-'?sapFromCol:lookupSAP(name);
           imp.push({name,sn,asset,node,brand,model,type,qty,
-            sap_code:'',sap_desc:'',location_code:'',remark});
+            sap_code:sapCode,sap_desc:name,location_code:'',remark});
         }
       });
       // ===== NODE VALIDATION: แจ้งเตือนรายการที่ Node ไม่พบในระบบ =====
@@ -1926,6 +2326,7 @@ function loadExcel(input){
       });
 
       devices=[...devices,...cleanImp];
+      saveDevices();
       renderImport();
       updateLoginStats();
 
@@ -1990,10 +2391,234 @@ function renderImport(){
       <td><span class="badge ${SPECIAL_NODES.includes(d.node)?'badge-bk2l':'badge-r5'}">${d.node||'-'}</span></td>
     </tr>`).join('');
   if(devices.length>100)tbody.innerHTML+=`<tr><td colspan="5" style="text-align:center;padding:10px;color:var(--text3);font-size:12px">แสดง 100 จาก ${devices.length.toLocaleString()} รายการ</td></tr>`;
+  // Update storage size display
+  try{
+    const stored=localStorage.getItem(STORAGE_KEY)||'';
+    const kb=Math.round(stored.length/1024);
+    const el=document.getElementById('storage-size');
+    if(el) el.textContent='💾 '+kb.toLocaleString()+' KB';
+  }catch(e){}
 }
-function clearDevices(){if(!confirm('ล้างข้อมูลทั้งหมด?'))return;devices=[];renderImport();updateLoginStats();toast('ล้างข้อมูลแล้ว');}
+function clearDevices(){
+  if(!confirm('ล้างข้อมูลทั้งหมด?'))return;
+  devices=[];
+  saveDevices();
+  renderImport();updateLoginStats();
+  toast('ล้างข้อมูลแล้ว');
+}
 
 // ========== EXPORT ALL ==========
+// ========== MANUAL ADD DEVICE ==========
+let _manSapCode=''; // SAP code ที่ selected จาก autocomplete
+
+function toggleManualForm(){
+  const body=document.getElementById('manual-form-body');
+  const arrow=document.getElementById('manual-form-arrow');
+  const open=body.style.display==='none';
+  body.style.display=open?'block':'none';
+  arrow.style.transform=open?'rotate(180deg)':'rotate(0deg)';
+  // Populate node dropdown dynamically
+  if(open){
+    const sel=document.getElementById('man-node');
+    const existing=[...sel.options].map(o=>o.value);
+    nodes.forEach(function(n){
+      if(!existing.includes(n.node_name)){
+        const opt=document.createElement('option');
+        opt.value=n.node_name; opt.textContent=n.node_name+' ('+n.province+')';
+        sel.appendChild(opt);
+      }
+    });
+  }
+}
+
+function sapAutocomplete(q){
+  const dropdown=document.getElementById('sap-dropdown');
+  const badge=document.getElementById('man-sap-code-badge');
+  if(!q||q.length<2){dropdown.style.display='none';_manSapCode='';badge.style.display='none';return;}
+
+  // Combine SAP_DB results + existing devices in system
+  const sapResults=getSAPSuggestions(q);
+
+  // Search existing devices matching query
+  const ql=q.toLowerCase();
+  const existingMap=new Map(); // sapCode -> {name, nodes:Set, count}
+  devices.forEach(function(d){
+    const matchName=(d.sap_desc||d.name||'').toLowerCase().includes(ql);
+    const matchCode=(d.sap_code||'').toLowerCase().includes(ql);
+    const matchSN=(d.sn||'').toLowerCase().includes(ql);
+    const matchNode=(d.node||'').toLowerCase().includes(ql);
+    if(matchName||matchCode||matchSN||matchNode){
+      const key=d.sap_code||'NO-SAP';
+      if(!existingMap.has(key)) existingMap.set(key,{name:d.sap_desc||d.name||'',nodes:new Set(),count:0});
+      const entry=existingMap.get(key);
+      entry.count++;
+      if(d.node) entry.nodes.add(d.node);
+    }
+  });
+
+  if(!sapResults.length && !existingMap.size){dropdown.style.display='none';return;}
+  dropdown.style.display='block';
+  dropdown.innerHTML='';
+
+  // Section: SAP Database
+  if(sapResults.length){
+    const hdr=document.createElement('div');
+    hdr.style.cssText='padding:6px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94A3B8;background:#F8FAFC;border-bottom:0.5px solid #E2E8F0';
+    hdr.textContent='SAP Database ('+sapResults.length+' รายการ)';
+    dropdown.appendChild(hdr);
+
+    sapResults.forEach(function(r){
+      // Check if this SAP code has data in system
+      const existing=existingMap.get(r.code);
+      const item=document.createElement('div');
+      item.style.cssText='padding:10px 14px;cursor:pointer;border-bottom:0.5px solid #F8FAFC;display:flex;align-items:center;gap:10px';
+      item.addEventListener('mousedown',function(){selectSAP(r.name,r.code);});
+      item.addEventListener('mouseover',function(){this.style.background='#F8FAFC';});
+      item.addEventListener('mouseout',function(){this.style.background='';});
+
+      const left=document.createElement('div');left.style.cssText='flex:1;min-width:0';
+      const nameEl=document.createElement('div');nameEl.style.cssText='font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis';nameEl.textContent=r.name;
+      const codeEl=document.createElement('div');codeEl.style.cssText='font-size:11px;font-family:monospace;color:#2563EB;margin-top:2px';codeEl.textContent=r.code;
+      left.appendChild(nameEl); left.appendChild(codeEl);
+
+      // Right: existing data badge
+      const right=document.createElement('div');right.style.cssText='flex-shrink:0;text-align:right';
+      if(existing){
+        const badge2=document.createElement('div');
+        badge2.style.cssText='font-size:10px;background:#DCFCE7;color:#15803D;padding:2px 7px;border-radius:100px;font-weight:600;white-space:nowrap';
+        badge2.textContent='มีในระบบ '+existing.count+' รายการ';
+        const nodeEl=document.createElement('div');
+        nodeEl.style.cssText='font-size:10px;color:#94A3B8;margin-top:2px';
+        nodeEl.textContent=[...existing.nodes].slice(0,3).join(', ');
+        right.appendChild(badge2); right.appendChild(nodeEl);
+      } else {
+        const noBadge=document.createElement('div');
+        noBadge.style.cssText='font-size:10px;color:#CBD5E0';
+        noBadge.textContent='ยังไม่มีในระบบ';
+        right.appendChild(noBadge);
+      }
+      item.appendChild(left); item.appendChild(right);
+      dropdown.appendChild(item);
+    });
+  }
+
+  // Section: Existing devices not in SAP_DB results
+  const extraEntries=[...existingMap.entries()].filter(function(e){
+    return !sapResults.find(function(r){return r.code===e[0];});
+  });
+
+  if(extraEntries.length){
+    const hdr2=document.createElement('div');
+    hdr2.style.cssText='padding:6px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94A3B8;background:#F8FAFC;border-bottom:0.5px solid #E2E8F0;border-top:0.5px solid #E2E8F0;margin-top:4px';
+    hdr2.textContent='ข้อมูลในระบบ ('+extraEntries.length+' รายการ)';
+    dropdown.appendChild(hdr2);
+
+    extraEntries.slice(0,8).forEach(function(e){
+      const [code,data]=e;
+      const item=document.createElement('div');
+      item.style.cssText='padding:10px 14px;cursor:pointer;border-bottom:0.5px solid #F8FAFC;display:flex;align-items:center;gap:10px';
+      item.addEventListener('mousedown',function(){selectSAP(data.name,code);});
+      item.addEventListener('mouseover',function(){this.style.background='#F8FAFC';});
+      item.addEventListener('mouseout',function(){this.style.background='';});
+
+      const left=document.createElement('div');left.style.cssText='flex:1;min-width:0';
+      const nameEl=document.createElement('div');nameEl.style.cssText='font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis';nameEl.textContent=data.name;
+      const nodesEl=document.createElement('div');nodesEl.style.cssText='font-size:11px;color:#64748B;margin-top:2px';
+      nodesEl.textContent='📍 '+[...data.nodes].slice(0,3).join(', ')+' · '+data.count+' รายการ';
+      left.appendChild(nameEl); left.appendChild(nodesEl);
+
+      const codeSpan=document.createElement('div');
+      codeSpan.style.cssText='font-size:11px;font-family:monospace;color:#2563EB;font-weight:700;white-space:nowrap;flex-shrink:0';
+      codeSpan.textContent=code;
+      item.appendChild(left); item.appendChild(codeSpan);
+      dropdown.appendChild(item);
+    });
+  }
+}
+
+function selectSAP(name, code){
+  _manSapCode=code;
+  document.getElementById('man-sap').value=name;
+  const badge=document.getElementById('man-sap-code-badge');
+  badge.textContent=code; badge.style.display='block';
+  // Auto-fill device name if empty
+  const nameEl=document.getElementById('man-name');
+  if(!nameEl.value) nameEl.value=name;
+  hideSapDropdown();
+}
+
+function hideSapDropdown(){
+  const dd=document.getElementById('sap-dropdown');
+  if(dd) dd.style.display='none';
+}
+
+function manualAddDevice(){
+  const sapInput=document.getElementById('man-sap').value.trim();
+  const sn=document.getElementById('man-sn').value.trim();
+  const name=document.getElementById('man-name').value.trim();
+  const node=document.getElementById('man-node').value;
+  const errEl=document.getElementById('man-err');
+
+  // Validation
+  const errors=[];
+  if(!_manSapCode && !sapInput.startsWith('ZASS-')) errors.push('กรุณาเลือก SAP Code จากรายการ (พิมพ์ชื่ออุปกรณ์แล้วเลือก)');
+  if(!sn) errors.push('กรุณากรอก Serial Number');
+  if(!node) errors.push('กรุณาเลือก Node / คลัง');
+
+  if(errors.length){
+    errEl.innerHTML=errors.map(function(e){return '⚠️ '+e;}).join('<br>');
+    errEl.style.display='block';
+    return;
+  }
+  errEl.style.display='none';
+
+  const sapCode=_manSapCode||sapInput;
+  const desc=document.getElementById('man-desc').value.trim();
+  const newDevice={
+    name: name||sapInput,
+    sn: sn,
+    asset: document.getElementById('man-asset').value.trim(),
+    node: node,
+    brand: document.getElementById('man-brand').value.trim(),
+    model: document.getElementById('man-model').value.trim(),
+    type: document.getElementById('man-type').value,
+    qty: 1,
+    sap_code: sapCode,
+    sap_desc: name||sapInput,
+    description: desc,
+    location_code: '', remark: desc, image: ''
+  };
+
+  // Check SN duplicate
+  const dupSN=devices.find(function(d){return d.sn&&d.sn===newDevice.sn;});
+  if(dupSN){
+    errEl.innerHTML='⚠️ Serial Number "'+sn+'" มีอยู่แล้วในระบบ (Node: '+dupSN.node+')';
+    errEl.style.display='block';
+    return;
+  }
+
+  devices.push(newDevice);
+  saveDevices();
+  renderImport();
+  updateLoginStats();
+  clearManualForm();
+  toast('เพิ่มอุปกรณ์ "'+newDevice.name.substring(0,30)+'" เรียบร้อย');
+}
+
+function clearManualForm(){
+  ['man-sap','man-name','man-desc','man-sn','man-asset','man-brand','man-model'].forEach(function(id){
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  const node=document.getElementById('man-node'); if(node) node.value='';
+  const type=document.getElementById('man-type'); if(type) type.value='Network';
+  const badge=document.getElementById('man-sap-code-badge');
+  if(badge) badge.style.display='none';
+  const err=document.getElementById('man-err');
+  if(err) err.style.display='none';
+  hideSapDropdown();
+  _manSapCode='';
+}
+
 // ========== IMAGE MANAGEMENT (1 ชื่อ = 1 รูป) ==========
 
 function renderImgMgmtList(){
@@ -2070,9 +2695,9 @@ function uploadNamedImg(input, name){
   if(file.size>2*1024*1024){toast('รูปใหญ่เกิน 2MB',false);return;}
   const reader=new FileReader();
   reader.onload=e=>{
-    setDevImg(name, e.target.result);
+    setDevImg(name, e.target.result); // setDevImg already calls saveImages()
     renderImgMgmtList();
-    renderAudit(); // refresh audit table icons
+    renderAudit();
     toast('บันทึกรูป "'+name.substring(0,30)+'" แล้ว');
   };
   reader.readAsDataURL(file);
@@ -2181,6 +2806,7 @@ function saveEditDev(){
   const nameKey=d.sap_desc||d.name||'';
   if(_editImgData==='__DELETE__') delDevImg(nameKey);
   else if(_editImgData) setDevImg(nameKey, _editImgData);
+  saveDevices();
   closeModal('editDevModal');
   renderAudit();
   renderImport();
@@ -2193,6 +2819,7 @@ function deleteDevice(){
   if(!confirm(`ต้องการลบ "${d.name||d.sn}" ออกจากระบบ?`))return;
   devices.splice(_editDevIdx,1);
   _editDevIdx=null;
+  saveDevices();
   closeModal('editDevModal');
   renderAudit();
   renderImport();
